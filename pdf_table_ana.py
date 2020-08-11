@@ -58,6 +58,7 @@ def get_table(tsv_file, pdf_dir, pswd):
 	if isfile(pdf_recf):
 		rl, _ = load_tsv(pdf_recf, False)
 		pdf_recd = {r[0] for r in rl}
+	print("parsed:", len(pdf_recd), pdf_recf)
 	files = [fp for fp in get_pdf_files(pdf_dir) if fp not in pdf_recd]
 	if not files:
 		return [dict(zip(head, row)) for row in data_l]
@@ -132,7 +133,7 @@ def get_lending(tsv_con, con_dir):
 def ana(pdf_dir, pswd, tsv_file, out_file, con_dir, tsv_con):
 	stat = defaultdict(Counter)
 	rows = get_table(tsv_file, pdf_dir, pswd)
-	head = []
+	head = ["普通提现","佣金","债权转让","债权次数","债权转让(入账)","债权次数(入账)","平台代充值","营销款","平台派息","投标","普通代偿"]
 	for row in rows:
 		dt = row['交易完成时间']
 		if not dt:
@@ -228,14 +229,19 @@ if __name__ == '__main__':
 	parser.add_argument('--to', help="date to")
 	parser.add_argument('--sort', type=int, default=0, help="sort index")
 	parser.add_argument('--target', action='store_true')
+	parser.add_argument('--contract', action='store_true')
 	args = parser.parse_args()
-	name = basename(args.dir)
+	pdf_dir = args.dir.rstrip("/")
+	name = basename(pdf_dir)
 	tsvf = args.tsv or join("data/%s_detail.tsv" % name)
 	if args.target:
 		outf = args.out or join("data/%s_target.csv" % name)
 		dt_to = args.to or date.today().isoformat()
-		ana_target(args.dir, args.pw, tsvf, outf, args.fr, dt_to, args.sort)
+		ana_target(pdf_dir, args.pw, tsvf, outf, args.fr, dt_to, args.sort)
 		exit(0)
 	outf = args.out or join("data/%s_output.csv" % name)
-	tsvc = args.con and args.ctsv or join("data/%s_contract.tsv" % name)
-	ana(args.dir, args.pw, tsvf, outf, args.con, tsvc)
+	tsvc = args.ctsv or join("data/%s_contract.tsv" % name)
+	if args.contract:
+		get_contract(tsvc, args.con)
+		exit(0)
+	ana(pdf_dir, args.pw, tsvf, outf, args.con, tsvc)

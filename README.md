@@ -9,7 +9,7 @@
 
 从新网银行公众号，下载管存账户的流水，例如，下载全部流水（2017-01-01到昨天），收到邮件后将附件中的pdf解压到一个文件夹下，之后每天申请前一天的流水，下载到该文件夹下的单独目录，如：
 
-<img src="https://raw.githubusercontent.com/ea-kk/lending_analyze/master/img/cashflow.png"/>
+<img src="./img/cashflow.png?raw=true"/>
 
 
 ### 运行环境
@@ -29,7 +29,7 @@
 
 8月6号生成的统计数据部分截图：
 
-<img src="https://raw.githubusercontent.com/ea-kk/lending_analyze/master/img/daily_flow.png"/>
+<img src="./img/daily_flow.png?raw=true"/>
 
 可见7月31号之后，我这个账户没有任何投资或回款，但转债异常频繁，佣金也异常高。我另外一个账户的统计分析也是这样的情况，4号的转债和佣金与这个账户5号的相当。不能不让人怀疑这有点穷途末路之感……
 
@@ -43,7 +43,7 @@
 
 从统计得到的数据来看，出账没有特别明显的异常高值，入账有：
 
-<img src="https://raw.githubusercontent.com/ea-kk/lending_analyze/master/img/target_mnt.png"/>
+<img src="./img/target_mnt.png?raw=true"/>
 
 其中隐含的信息就无从所知了……
 

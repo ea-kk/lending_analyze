@@ -90,7 +90,7 @@ def get_contract(tsv_con, con_dir):
 	if isfile(tsv_con):
 		data_l, head = load_tsv(tsv_con)
 		return [dict(zip(head, row)) for row in data_l]
-	if not isdir(con_dir):
+	if not con_dir or not isdir(con_dir):
 		return []
 	head = []
 	rows = []
@@ -176,7 +176,7 @@ def ana(pdf_dir, pswd, tsv_file, out_file, con_dir, tsv_con):
 		stat_table.append([dt]+row)
 	for idx, fname in insert_seq:
 		head.insert(idx, fname)
-	lend_d = get_lending(tsv_con, con_dir) if con_dir else {}
+	lend_d = get_lending(tsv_con, con_dir)
 	lend_idx = max(zou_idx, zin_idx) + 1
 	head.insert(lend_idx, "出借详情")
 	head.insert(lend_idx, "出借年化")

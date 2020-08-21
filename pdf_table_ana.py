@@ -53,6 +53,8 @@ def get_table(tsv_file, pdf_dir, pswd):
 	head = []
 	if isfile(tsv_file):
 		data_l, head = load_tsv(tsv_file)
+	if not isdir(pdf_dir):
+		return [dict(zip(head, row)) for row in data_l]
 	pdf_recf = join("data/%s_record.txt" % basename(pdf_dir))
 	pdf_recd = set()
 	if isfile(pdf_recf):
@@ -88,6 +90,8 @@ def get_contract(tsv_con, con_dir):
 	if isfile(tsv_con):
 		data_l, head = load_tsv(tsv_con)
 		return [dict(zip(head, row)) for row in data_l]
+	if not isdir(con_dir):
+		return []
 	head = []
 	rows = []
 	for file_ in sorted(os.listdir(con_dir)):
@@ -172,7 +176,7 @@ def ana(pdf_dir, pswd, tsv_file, out_file, con_dir, tsv_con):
 		stat_table.append([dt]+row)
 	for idx, fname in insert_seq:
 		head.insert(idx, fname)
-	lend_d = get_lending(tsv_con, con_dir)
+	lend_d = get_lending(tsv_con, con_dir) if con_dir else {}
 	lend_idx = max(zou_idx, zin_idx) + 1
 	head.insert(lend_idx, "出借详情")
 	head.insert(lend_idx, "出借年化")
@@ -182,10 +186,13 @@ def ana(pdf_dir, pswd, tsv_file, out_file, con_dir, tsv_con):
 		row.insert(lend_idx+1, nh)
 	save_csv(out_file, stat_table, ['date']+head)
 
-def ana_target(pdf_dir, pswd, tsv_file, out_file, dt_fr, dt_to, sort_i=0):
+def ana_target(pdf_dir, pswd, tsv_file, out_file, dt_fr, dt_to, sort_i=0, more=[]):
 	tc_tg = {}
 	stat = {}
 	rows = get_table(tsv_file, pdf_dir, pswd)
+	for tf  in more:
+		print("more:", tf)
+		rows.extend(get_table(tf, "", ""))
 	for row in rows:
 		dt = row['交易完成时间']
 		if not dt:
@@ -229,6 +236,7 @@ if __name__ == '__main__':
 	parser.add_argument('--to', help="date to")
 	parser.add_argument('--sort', type=int, default=0, help="sort index")
 	parser.add_argument('--target', action='store_true')
+	parser.add_argument('--more', nargs='*', help="more detail files for target")
 	parser.add_argument('--contract', action='store_true')
 	args = parser.parse_args()
 	pdf_dir = args.dir.rstrip("/")
@@ -237,7 +245,7 @@ if __name__ == '__main__':
 	if args.target:
 		outf = args.out or join("data/%s_target.csv" % name)
 		dt_to = args.to or date.today().isoformat()
-		ana_target(pdf_dir, args.pw, tsvf, outf, args.fr, dt_to, args.sort)
+		ana_target(pdf_dir, args.pw, tsvf, outf, args.fr, dt_to, args.sort, args.more)
 		exit(0)
 	outf = args.out or join("data/%s_output.csv" % name)
 	tsvc = args.ctsv or join("data/%s_contract.tsv" % name)
